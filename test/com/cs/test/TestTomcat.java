@@ -33,6 +33,12 @@ public class TestTomcat {
         Assert.assertEquals(html,"<div style='color:blue' >Hello DIY Tomcat!</div>");
     }
 
+    @Test
+    public void testHtml(){
+        String html = getContentString("/a.html");
+        Assert.assertEquals(html,"Hello DIY Tomcat from a.html");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);

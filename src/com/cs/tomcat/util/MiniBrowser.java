@@ -37,11 +37,7 @@ public class MiniBrowser {
         if (null == result) {
             return null;
         }
-        try {
-            return new String(result, "utf-8").trim();
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        return new String(result, StandardCharsets.UTF_8).trim();
 
     }
 
@@ -108,7 +104,7 @@ public class MiniBrowser {
                 path = "/";
             }
 
-            String firstLine = "GET" + path + "HTTP/1.1\r\n";
+            String firstLine = "GET " + path + " HTTP/1.1\r\n";
 
             StringBuffer httpRequestString = new StringBuffer();
             httpRequestString.append(firstLine);

@@ -22,7 +22,7 @@ public class Request {
     public Request(Socket socket)throws IOException{
         this.socket = socket;
         parseHttpRequest();
-        if (StrUtil.isNotEmpty(requestString)){
+        if (StrUtil.isEmpty(requestString)){
             return;
         }
         parseUri();
@@ -37,7 +37,7 @@ public class Request {
 
     private void parseUri(){
         String temp;
-        temp = StrUtil.subBetween(requestString,"","");
+        temp = StrUtil.subBetween(requestString," "," ");
         if (!StrUtil.contains(temp,'?')){
             uri = temp;
             return;

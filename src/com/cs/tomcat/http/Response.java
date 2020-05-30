@@ -30,7 +30,7 @@ public class Response {
         return printWriter;
     }
 
-    public byte[] getBody()throws IOException{
+    public byte[] getBody(){
         String content = stringWriter.toString();
         byte[] body = content.getBytes(StandardCharsets.UTF_8);
         return body;
