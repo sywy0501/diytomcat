@@ -4,13 +4,14 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * @description: 迷你浏览器
+ * @description: 迷你浏览器 模拟发送http协议的请求 并获得完整的http响应
  * @author: chushi
  * @create: 2020-05-29 11:44
  **/
@@ -74,6 +75,13 @@ public class MiniBrowser {
         return getHttpString(url, false);
     }
 
+    /**
+     * @author: cs
+     * @date: 2020/5/30 11:08
+     * @param: [url, gzip]
+     * @return: byte[]
+     * @desc: 通过socket发送http协议给服务器
+     */
     public static byte[] getHttpBytes(String url, boolean gzip) {
         byte[] result = null;
         try {
@@ -113,31 +121,35 @@ public class MiniBrowser {
             PrintWriter printWriter = new PrintWriter(client.getOutputStream(), true);
             printWriter.println(httpRequestString);
             InputStream is = client.getInputStream();
-            int buffer_size = 1024;
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[buffer_size];
-
-            while (true) {
-                int length = is.read(buffer);
-                if (-1 == length) {
-                    break;
-                }
-                baos.write(buffer, 0, length);
-                if (length != buffer_size) {
-                    break;
-                }
-            }
-            result = baos.toByteArray();
+            result = readBytes(is);
             client.close();
         } catch (Exception e) {
             e.printStackTrace();
-            try {
-                result = e.toString().getBytes("utf-8");
-            } catch (UnsupportedEncodingException e1) {
-                e1.printStackTrace();
-            }
+            result = e.toString().getBytes(StandardCharsets.UTF_8);
         }
         return result;
+    }
+
+    public static byte[] readBytes(InputStream is)throws IOException{
+        //准备1024长度的缓存，不断从输入流读出到缓存中
+        int bufferSize = 1024;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[bufferSize];
+        while (true) {
+            int length = is.read(buffer);
+            //读取到的长度是-1，那么就表示到头了，停止循环
+            if (-1 == length) {
+                break;
+            }
+            //将读取到的数据根据实际长度写出到一个字节数组输出流
+            baos.write(buffer, 0, length);
+            //长度小于bufferSize说明读完
+            if (length != bufferSize) {
+                break;
+            }
+        }
+        //将ByteArrayOutputStream中的数组导出
+        return baos.toByteArray();
     }
 }
