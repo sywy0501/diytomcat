@@ -1,11 +1,13 @@
 package com.cs.tomcat;
 
+import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.LogFactory;
 import cn.hutool.system.SystemUtil;
+import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,9 +29,13 @@ import java.util.Set;
  * @create: 2020-05-28 18:31
  **/
 public class Bootstrap {
+
+    public static Map<String, Context> contextMap = new HashMap<>();
+
     public static void main(String[] args) {
         try {
             logJVM();
+            scanContextOnWebAppsFolder();
             int port = 18080;
 
             //服务器和浏览器通过socket通信
@@ -51,7 +58,11 @@ public class Bootstrap {
                             Response response = new Response();
 
                             String uri = request.getUri();
-                            System.out.println(uri);
+                            if (null==uri){
+                                return;
+                            }
+                            System.out.println("uri: "+uri);
+                            Context context = request.getContext();
                             //如果是"/"就返回原字符串
                             if ("/".equals(uri)) {
                                 String html = "Hello DIY Tomcat ";
@@ -60,7 +71,7 @@ public class Bootstrap {
                                 //获取文件名
                                 String fileName = StrUtil.removePrefix(uri, "/");
                                 //获取文件对象
-                                File file = FileUtil.file(Constant.rootFolder, fileName);
+                                File file = FileUtil.file(context.getDocBase(), fileName);
                                 //文件存在则打印，不存在返回相关信息
                                 if (file.exists()) {
                                     String fileContent = FileUtil.readUtf8String(file);
@@ -126,5 +137,30 @@ public class Bootstrap {
         for (String key : keys) {
             LogFactory.get().info(key + ":\t\t" + infos.get(key));
         }
+    }
+
+    private static void scanContextOnWebAppsFolder() {
+        File[] folders = Constant.webappsFolder.listFiles();
+        if (folders != null) {
+            for (File folder : folders) {
+                if (!folder.isDirectory()) {
+                    continue;
+                }
+                loadContext(folder);
+            }
+        }
+
+    }
+
+    private static void loadContext(File folder) {
+        String path = folder.getName();
+        if ("ROOT".equals(path)) {
+            path = "/";
+        } else {
+            path = "/" + path;
+        }
+        String docBase = folder.getAbsolutePath();
+        Context context = new Context(path, docBase);
+        contextMap.put(context.getPath(), context);
     }
 }

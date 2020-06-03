@@ -66,6 +66,12 @@ public class TestTomcat {
         Assert.assertTrue(duration<3000);
     }
 
+    @Test
+    public void testIndex(){
+        String html = "/a/index.html";
+        Assert.assertEquals(getContentString(html),"Hello DIY Tomcat from index.html@a");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
