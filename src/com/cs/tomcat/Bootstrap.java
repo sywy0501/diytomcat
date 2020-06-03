@@ -11,6 +11,7 @@ import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
+import com.cs.tomcat.util.ServerXMLUtil;
 import com.cs.tomcat.util.ThreadPoolUtil;
 
 import java.io.File;
@@ -18,10 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @description:
@@ -36,6 +34,7 @@ public class Bootstrap {
         try {
             logJVM();
             scanContextOnWebAppsFolder();
+            scanContextsServerXML();
             int port = 18080;
 
             //服务器和浏览器通过socket通信
@@ -58,10 +57,10 @@ public class Bootstrap {
                             Response response = new Response();
 
                             String uri = request.getUri();
-                            if (null==uri){
+                            if (null == uri) {
                                 return;
                             }
-                            System.out.println("uri: "+uri);
+                            System.out.println("uri: " + uri);
                             Context context = request.getContext();
                             //如果是"/"就返回原字符串
                             if ("/".equals(uri)) {
@@ -162,5 +161,12 @@ public class Bootstrap {
         String docBase = folder.getAbsolutePath();
         Context context = new Context(path, docBase);
         contextMap.put(context.getPath(), context);
+    }
+
+    private static void scanContextsServerXML() {
+        List<Context> contexts = ServerXMLUtil.getContexts();
+        for (Context context : contexts) {
+            contextMap.put(context.getPath(), context);
+        }
     }
 }

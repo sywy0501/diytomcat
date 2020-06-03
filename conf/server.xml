@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server>
+    <Context path="/b" docBase="/Users/chushi/develop/IdeaProjects/diytomcat/webapps/ROOT/b" />
+</Server>

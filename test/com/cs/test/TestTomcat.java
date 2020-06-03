@@ -67,9 +67,15 @@ public class TestTomcat {
     }
 
     @Test
-    public void testIndex(){
+    public void testaIndex(){
         String html = "/a/index.html";
         Assert.assertEquals(getContentString(html),"Hello DIY Tomcat from index.html@a");
+    }
+
+    @Test
+    public void testbIndex(){
+        String html = "/b/index.html";
+        Assert.assertEquals(getContentString(html),"Hello DIY Tomcat from index.html@b");
     }
 
     private String getContentString(String uri){
