@@ -1,8 +1,8 @@
 package com.cs.tomcat.http;
 
 import cn.hutool.core.util.StrUtil;
-import com.cs.tomcat.Bootstrap;
 import com.cs.tomcat.catalina.Context;
+import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Host;
 import com.cs.tomcat.util.MiniBrowser;
 
@@ -22,11 +22,11 @@ public class Request {
     private String uri;
     private Socket socket;
     private Context context;
-    private Host host;
+    private Engine engine;
 
-    public Request(Socket socket,Host host) throws IOException {
+    public Request(Socket socket,Engine engine) throws IOException {
         this.socket = socket;
-        this.host = host;
+        this.engine = engine;
         parseHttpRequest();
         if (StrUtil.isEmpty(requestString)) {
             return;
@@ -36,17 +36,6 @@ public class Request {
         parseContext();
         if (!"/".equals(context.getPath())) {
             uri = StrUtil.removePrefix(uri, context.getPath());
-        }
-
-        String path = StrUtil.subBetween(uri,"/","/");
-        if (null==path){
-            path = "/";
-        }else {
-            path = "/"+path;
-        }
-        context = host.getContext(path);
-        if (null==context){
-            context = host.getContext("/");
         }
     }
 
@@ -89,9 +78,9 @@ public class Request {
         } else {
             path = "/" + path;
         }
-        context = host.getContext(path);
+        context = engine.getDefaultHost().getContext(path);
         if (null == context) {
-            context = host.getContext("/");
+            context = engine.getDefaultHost().getContext("/");
         }
     }
 }

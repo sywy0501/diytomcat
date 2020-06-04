@@ -4,7 +4,6 @@ import com.cs.tomcat.util.Constant;
 import com.cs.tomcat.util.ServerXMLUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +15,13 @@ import java.util.Map;
  **/
 public class Host {
     private String name;
+    private Engine engine;
     private Map<String, Context> contextMap;
 
-    public Host() {
+    public Host(String name ,Engine engine) {
         this.contextMap = new HashMap<>();
-        this.name = ServerXMLUtil.getHostName();
+        this.name = name;
+        this.engine = engine;
         scanContextOnWebAppsFolder();
         scanContextInServerXML();
     }
