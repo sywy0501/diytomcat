@@ -64,8 +64,15 @@ public class ServerXMLUtil {
 
     public static String getServiceName(){
         String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
-        Document d = Jsoup.parse(xml);
-        Element host = d.select("Service").first();
-        return host.attr("name");
+        Document document = Jsoup.parse(xml);
+        Element service = document.select("Service").first();
+        return service.attr("name");
+    }
+
+    public static String getServerName(){
+        String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
+        Document document = Jsoup.parse(xml);
+        Element server = document.select("server").first();
+        return server.attr("name");
     }
 }
