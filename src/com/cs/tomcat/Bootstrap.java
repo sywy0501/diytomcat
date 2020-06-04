@@ -10,6 +10,7 @@ import cn.hutool.system.SystemUtil;
 import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Host;
+import com.cs.tomcat.catalina.Service;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
@@ -33,7 +34,7 @@ public class Bootstrap {
     public static void main(String[] args) {
         try {
             logJVM();
-            Engine engine = new Engine();
+            Service service = new Service();
             int port = 18080;
 
             //服务器和浏览器通过socket通信
@@ -47,7 +48,7 @@ public class Bootstrap {
                     public void run() {
                         try {
                             //打开输入流准备接受浏览器提交信息
-                            Request request = new Request(s,engine);
+                            Request request = new Request(s,service);
                             //将浏览器信息读取并放入字节数组
                             //将字节数组转化成字符串并打印
                             //System.out.println("浏览器输入信息：\r\n" + request.getRequestString());

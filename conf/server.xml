@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Server>
-    <Engine defaultHost = "localhost">
-        <Host name = "localhost">
-            <Context path="/b" docBase="/Users/chushi/develop/IdeaProjects/diytomcat/webapps/ROOT/b" />
-        </Host>
-    </Engine>
+    <Service name="Catalina">
+        <Engine defaultHost = "localhost">
+            <Host name = "localhost">
+                <Context path="/b" docBase="/Users/chushi/develop/IdeaProjects/diytomcat/webapps/ROOT/b" />
+            </Host>
+        </Engine>
+    </Service>
 </Server>

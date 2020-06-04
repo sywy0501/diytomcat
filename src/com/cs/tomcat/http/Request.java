@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Host;
+import com.cs.tomcat.catalina.Service;
 import com.cs.tomcat.util.MiniBrowser;
 
 import java.io.IOException;
@@ -22,11 +23,11 @@ public class Request {
     private String uri;
     private Socket socket;
     private Context context;
-    private Engine engine;
+    private Service service;
 
-    public Request(Socket socket,Engine engine) throws IOException {
+    public Request(Socket socket,Service service) throws IOException {
         this.socket = socket;
-        this.engine = engine;
+        this.service = service;
         parseHttpRequest();
         if (StrUtil.isEmpty(requestString)) {
             return;
@@ -78,9 +79,9 @@ public class Request {
         } else {
             path = "/" + path;
         }
-        context = engine.getDefaultHost().getContext(path);
+        context = service.getEngine().getDefaultHost().getContext(path);
         if (null == context) {
-            context = engine.getDefaultHost().getContext("/");
+            context = service.getEngine().getDefaultHost().getContext("/");
         }
     }
 }
