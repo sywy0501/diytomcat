@@ -31,4 +31,12 @@ public class ServerXMLUtil {
         }
         return result;
     }
+
+    public static String getHostName (){
+        String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
+        Document dc = Jsoup.parse(xml);
+
+        Element host = dc.select("Host").first();
+        return host.attr("name");
+    }
 }
