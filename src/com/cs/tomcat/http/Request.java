@@ -37,6 +37,9 @@ public class Request {
         parseContext();
         if (!"/".equals(context.getPath())) {
             uri = StrUtil.removePrefix(uri, context.getPath());
+            if (StrUtil.isEmpty(uri)){
+                uri = "/";
+            }
         }
     }
 
@@ -73,6 +76,11 @@ public class Request {
      * 增加解析Context的方法，通过获取uri中的信息来得到path，然后根据这个path来获取Context对象。如果获取不到 就获取对应的Root Context
      */
     private void parseContext() {
+        Engine engine = service.getEngine();
+        context = engine.getDefaultHost().getContext(uri);
+        if (null!=context){
+            return;
+        }
         String path = StrUtil.subBetween(uri, "/", "/");
         if (null == path) {
             path = "/";

@@ -11,6 +11,7 @@ import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
 import com.cs.tomcat.util.ServerXMLUtil;
 import com.cs.tomcat.util.ThreadPoolUtil;
+import com.cs.tomcat.util.WebXMLUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,35 +87,34 @@ public class Server {
                             System.out.println("uri: " + uri);
                             Context context = request.getContext();
 
-                            if ("/500.html".equals(uri)){
+                            if ("/500.html".equals(uri)) {
                                 throw new Exception("this is a deliberately create exception");
                             }
                             //如果是"/"就返回原字符串
                             if ("/".equals(uri)) {
-                                String html = "Hello DIY Tomcat ";
-                                response.getPrintWriter().println(html);
-                            } else {
-                                //获取文件名
-                                String fileName = StrUtil.removePrefix(uri, "/");
-                                //获取文件对象
-                                File file = FileUtil.file(context.getDocBase(), fileName);
-                                //文件存在则打印，不存在返回相关信息
-                                if (file.exists()) {
-                                    String fileContent = FileUtil.readUtf8String(file);
-                                    response.getPrintWriter().println(fileContent);
-
-                                    if (fileName.equals("timeConsume.html")) {
-                                        ThreadUtil.sleep(1000);
-                                    }
-                                } else {
-                                    handle404(s, uri);
-                                }
+                                uri = WebXMLUtil.getWelcomeFile(request.getContext());
                             }
+                            //获取文件名
+                            String fileName = StrUtil.removePrefix(uri, "/");
+                            //获取文件对象
+                            File file = FileUtil.file(context.getDocBase(), fileName);
+                            //文件存在则打印，不存在返回相关信息
+                            if (file.exists()) {
+                                String fileContent = FileUtil.readUtf8String(file);
+                                response.getPrintWriter().println(fileContent);
+
+                                if (fileName.equals("timeConsume.html")) {
+                                    ThreadUtil.sleep(1000);
+                                }
+                            } else {
+                                handle404(s, uri);
+                            }
+
 
                             handle200(s, response);
                         } catch (Exception e) {
                             LogFactory.get().error(e);
-                            handle500(s,e);
+                            handle500(s, e);
                         } finally {
                             try {
                                 if (!s.isClosed()) {

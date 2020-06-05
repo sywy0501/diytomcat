@@ -52,4 +52,7 @@ public class Constant {
             + "<u>The server encountered an internal error that prevented it from fulfilling this request.</u></p>"
             + "<p>Stacktrace:</p>" + "<pre>{}</pre>" + "<HR size='1' noshade='noshade'><h3>DiyTocmat 1.0.1</h3>"
             + "</body></html>";
+
+    public static final File webXmlFile = new File(confFolder, "web.xml");
+
 }
