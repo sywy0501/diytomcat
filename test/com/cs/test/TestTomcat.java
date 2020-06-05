@@ -78,9 +78,26 @@ public class TestTomcat {
         Assert.assertEquals(getContentString(html),"Hello DIY Tomcat from index.html@b");
     }
 
+    @Test
+    public void test404(){
+        String response = getHttpString("/not_exist.html");
+        containAssert(response,"HTTP/1.1 404 Not Found");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
         return content;
+    }
+
+    private String getHttpString(String uri){
+        String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
+        String http = MiniBrowser.getHttpString(url);
+        return http;
+    }
+
+    private void containAssert(String html,String string){
+        boolean match = StrUtil.containsAny(html,string);
+        Assert.assertTrue(match);
     }
 }

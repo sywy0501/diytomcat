@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,11 +30,11 @@ import java.util.Set;
 public class Server {
     private Service service;
 
-    public Server(){
+    public Server() {
         this.service = new Service(this);
     }
 
-    public void start(){
+    public void start() {
         logJVM();
         init();
     }
@@ -55,7 +56,7 @@ public class Server {
         }
     }
 
-    private void init(){
+    private void init() {
         try {
             int port = 18080;
 
@@ -70,7 +71,7 @@ public class Server {
                     public void run() {
                         try {
                             //打开输入流准备接受浏览器提交信息
-                            Request request = new Request(s,service);
+                            Request request = new Request(s, service);
                             //将浏览器信息读取并放入字节数组
                             //将字节数组转化成字符串并打印
                             //System.out.println("浏览器输入信息：\r\n" + request.getRequestString());
@@ -102,13 +103,21 @@ public class Server {
                                         ThreadUtil.sleep(1000);
                                     }
                                 } else {
-                                    response.getPrintWriter().println("File Not Found");
+                                    handle404(s, uri);
                                 }
                             }
 
                             handle200(s, response);
                         } catch (Exception e) {
                             e.printStackTrace();
+                        } finally {
+                            try {
+                                if (!s.isClosed()) {
+                                    s.close();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 };
@@ -139,7 +148,13 @@ public class Server {
         //将字符串转换成字节数组发出去
         OutputStream os = s.getOutputStream();
         os.write(responseBytes);
-        //关闭对应的socket
-        s.close();
+    }
+
+    protected void handle404(Socket s, String uri) throws IOException {
+        OutputStream os = s.getOutputStream();
+        String responseText = StrUtil.format(Constant.textFormat_404, uri, uri);
+        responseText = Constant.response_head_404 + responseText;
+        byte[] responseByte = responseText.getBytes(StandardCharsets.UTF_8);
+        os.write(responseByte);
     }
 }
