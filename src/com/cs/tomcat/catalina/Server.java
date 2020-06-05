@@ -85,6 +85,10 @@ public class Server {
                             }
                             System.out.println("uri: " + uri);
                             Context context = request.getContext();
+
+                            if ("/500.html".equals(uri)){
+                                throw new Exception("this is a deliberately create exception");
+                            }
                             //如果是"/"就返回原字符串
                             if ("/".equals(uri)) {
                                 String html = "Hello DIY Tomcat ";
@@ -109,7 +113,8 @@ public class Server {
 
                             handle200(s, response);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LogFactory.get().error(e);
+                            handle500(s,e);
                         } finally {
                             try {
                                 if (!s.isClosed()) {
@@ -156,5 +161,32 @@ public class Server {
         responseText = Constant.response_head_404 + responseText;
         byte[] responseByte = responseText.getBytes(StandardCharsets.UTF_8);
         os.write(responseByte);
+    }
+
+    protected void handle500(Socket s, Exception e) {
+        try {
+            OutputStream os = s.getOutputStream();
+            StackTraceElement stes[] = e.getStackTrace();
+            StringBuffer sb = new StringBuffer();
+            sb.append(e.toString());
+            sb.append("\r\n");
+
+            for (StackTraceElement ste : stes) {
+                sb.append("\t");
+                sb.append(ste.toString());
+                sb.append("\r\n");
+            }
+            String msg = e.getMessage();
+
+            if (null != msg && msg.length() > 0) {
+                msg = msg.substring(0, 19);
+            }
+            String text = StrUtil.format(Constant.textFormat_500, msg, e.toString(), sb.toString());
+            text = Constant.response_head_500 + text;
+            byte[] responseBytes = text.getBytes(StandardCharsets.UTF_8);
+            os.write(responseBytes);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 }

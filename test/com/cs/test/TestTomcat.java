@@ -84,6 +84,12 @@ public class TestTomcat {
         containAssert(response,"HTTP/1.1 404 Not Found");
     }
 
+    @Test
+    public void test500(){
+        String response = getHttpString("/500.html");
+        containAssert(response,"HTTP/1.1 500 Internal Server Error");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
