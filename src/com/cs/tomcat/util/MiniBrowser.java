@@ -92,7 +92,7 @@ public class MiniBrowser {
             client.connect(inetSocketAddress, 1000);
             Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Host", u.getHost() + ":" + port);
-            requestHeaders.put("Accept", "test/html");
+            requestHeaders.put("Accept", "text/html");
             requestHeaders.put("User-Agent", "how2j mini brower / java1.8");
 
             if (gzip) {

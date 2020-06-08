@@ -90,6 +90,12 @@ public class TestTomcat {
         containAssert(response,"HTTP/1.1 500 Internal Server Error");
     }
 
+    @Test
+    public void testaText(){
+        String response = getHttpString("/a.text");
+        containAssert(response,"Content-Type:text/plain");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);

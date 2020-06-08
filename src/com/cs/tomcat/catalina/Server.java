@@ -100,6 +100,9 @@ public class Server {
                             File file = FileUtil.file(context.getDocBase(), fileName);
                             //文件存在则打印，不存在返回相关信息
                             if (file.exists()) {
+                                String extName = FileUtil.extName(file);
+                                String mimeType = WebXMLUtil.getMimeType(extName);
+                                response.setContentType(mimeType);
                                 String fileContent = FileUtil.readUtf8String(file);
                                 response.getPrintWriter().println(fileContent);
 
