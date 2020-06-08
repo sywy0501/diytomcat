@@ -3,6 +3,7 @@ package com.cs.tomcat.http;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -15,6 +16,19 @@ public class Response {
     private StringWriter stringWriter;
     private PrintWriter printWriter;
     private String contentType;
+    private byte[] body;
+
+    public void setBody(byte[] body){
+        this.body = body;
+    }
+
+    public byte[] getBody()throws UnsupportedEncodingException{
+        if (null==body){
+            String content = stringWriter.toString();
+            body = content.getBytes(StandardCharsets.UTF_8);
+        }
+        return body;
+    }
 
     public Response(){
         this.stringWriter = new StringWriter();
@@ -28,12 +42,6 @@ public class Response {
 
     public PrintWriter getPrintWriter(){
         return printWriter;
-    }
-
-    public byte[] getBody(){
-        String content = stringWriter.toString();
-        byte[] body = content.getBytes(StandardCharsets.UTF_8);
-        return body;
     }
 
     public void setContentType(String contentType){

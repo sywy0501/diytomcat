@@ -92,8 +92,20 @@ public class TestTomcat {
 
     @Test
     public void testaText(){
-        String response = getHttpString("/a.text");
+        String response = getContentString("/a.text");
         containAssert(response,"Content-Type:text/plain");
+    }
+
+    @Test
+    public void testPNG(){
+        byte[] response = getContentBytes("/logo.png");
+        Assert.assertEquals(24969,response.length);
+    }
+
+    @Test
+    public void testPDF(){
+        byte[] response = getContentBytes("/etf.pdf");
+        Assert.assertEquals(3590775,response.length);
     }
 
     private String getContentString(String uri){
@@ -102,9 +114,19 @@ public class TestTomcat {
         return content;
     }
 
+    private byte[] getContentBytes(String uri){
+        return getContentBytes(uri,false);
+    }
+
     private String getHttpString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String http = MiniBrowser.getHttpString(url);
+        return http;
+    }
+
+    private byte[] getContentBytes(String uri,boolean gzip){
+        String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
+        byte[] http = MiniBrowser.getContentBytes(url,gzip);
         return http;
     }
 
@@ -112,4 +134,8 @@ public class TestTomcat {
         boolean match = StrUtil.containsAny(html,string);
         Assert.assertTrue(match);
     }
+
+
+
+
 }

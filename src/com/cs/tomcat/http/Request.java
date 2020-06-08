@@ -45,7 +45,8 @@ public class Request {
 
     private void parseHttpRequest() throws IOException {
         InputStream is = this.socket.getInputStream();
-        byte[] bytes = MiniBrowser.readBytes(is);
+        //由于浏览器使用长链接，链接不会主动关闭 如果fully设置true 读取到不够bufferSize就不继续读取，就会卡住
+        byte[] bytes = MiniBrowser.readBytes(is,false);
         requestString = new String(bytes, StandardCharsets.UTF_8);
     }
 

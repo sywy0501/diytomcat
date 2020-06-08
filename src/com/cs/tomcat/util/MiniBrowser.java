@@ -118,7 +118,7 @@ public class MiniBrowser {
             printWriter.println(httpRequestString);
             InputStream is = client.getInputStream();
 
-            result = readBytes(is);
+            result = readBytes(is,true);
             client.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +127,7 @@ public class MiniBrowser {
         return result;
     }
 
-    public static byte[] readBytes(InputStream is)throws IOException{
+    public static byte[] readBytes(InputStream is,boolean fully)throws IOException{
         //准备1024长度的缓存，不断从输入流读出到缓存中
         int bufferSize = 1024;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -140,8 +140,8 @@ public class MiniBrowser {
             }
             //将读取到的数据根据实际长度写出到一个字节数组输出流
             baos.write(buffer, 0, length);
-            //长度小于bufferSize说明读完
-            if (length != bufferSize) {
+            //长度小于bufferSize说明读完  当fully为true即使读到的数据没有bufferSize这么长也会继续读取
+            if (!fully&&length != bufferSize) {
                 break;
             }
         }

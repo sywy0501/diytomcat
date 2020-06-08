@@ -103,8 +103,9 @@ public class Server {
                                 String extName = FileUtil.extName(file);
                                 String mimeType = WebXMLUtil.getMimeType(extName);
                                 response.setContentType(mimeType);
-                                String fileContent = FileUtil.readUtf8String(file);
-                                response.getPrintWriter().println(fileContent);
+                                //文件读取成二进制，放入response的body
+                                byte[] body = FileUtil.readBytes(file);
+                                response.setBody(body);
 
                                 if (fileName.equals("timeConsume.html")) {
                                     ThreadUtil.sleep(1000);
@@ -112,7 +113,6 @@ public class Server {
                             } else {
                                 handle404(s, uri);
                             }
-
 
                             handle200(s, response);
                         } catch (Exception e) {
