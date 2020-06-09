@@ -34,14 +34,6 @@ public class Host {
         this.name = name;
     }
 
-    public Map<String, Context> getContextMap() {
-        return contextMap;
-    }
-
-    public void setContextMap(Map<String, Context> contextMap) {
-        this.contextMap = contextMap;
-    }
-
     private void scanContextInServerXML() {
         List<Context> contexts = ServerXMLUtil.getContexts();
         for (Context context : contexts) {

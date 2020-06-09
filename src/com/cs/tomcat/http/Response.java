@@ -22,7 +22,7 @@ public class Response {
         this.body = body;
     }
 
-    public byte[] getBody()throws UnsupportedEncodingException{
+    public byte[] getBody(){
         if (null==body){
             String content = stringWriter.toString();
             body = content.getBytes(StandardCharsets.UTF_8);

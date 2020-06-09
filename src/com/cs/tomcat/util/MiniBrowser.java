@@ -17,7 +17,7 @@ import java.util.Set;
  **/
 public class MiniBrowser {
     public static void main(String[] args) {
-        String url = "https://how2j.cn/k/diytomcat/diytomcat-minibrower/2462.html#nowhere";
+        String url = "https://how2j.cn/k/diytomcat/diytomcat-minibrower/2462.html";
         String contentString = getContentString(url, false);
         System.out.println(contentString);
         String httpString = getHttpString(url, false);
@@ -93,7 +93,8 @@ public class MiniBrowser {
             Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Host", u.getHost() + ":" + port);
             requestHeaders.put("Accept", "text/html");
-            requestHeaders.put("User-Agent", "how2j mini brower / java1.8");
+            requestHeaders.put("Connection", "close");
+            requestHeaders.put("User-Agent", "mini brower / java1.8");
 
             if (gzip) {
                 requestHeaders.put("Accept-Encoding", "gzip");

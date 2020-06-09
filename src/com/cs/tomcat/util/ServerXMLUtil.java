@@ -1,9 +1,8 @@
 package com.cs.tomcat.util;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.FileUtil;
-import com.cs.tomcat.catalina.Context;
-import com.cs.tomcat.catalina.Host;
-import com.cs.tomcat.catalina.Engine;
+import com.cs.tomcat.catalina.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,14 +33,6 @@ public class ServerXMLUtil {
         return result;
     }
 
-    public static String getHostName (){
-        String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
-        Document dc = Jsoup.parse(xml);
-
-        Element host = dc.select("Host").first();
-        return host.attr("name");
-    }
-
     public static String getEngineDefaultHost(){
         String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
         Document document = Jsoup.parse(xml);
@@ -69,10 +60,17 @@ public class ServerXMLUtil {
         return service.attr("name");
     }
 
-    public static String getServerName(){
+    public static List<Connector> getConnectors(Service service){
+        List<Connector> result = new ArrayList<>();
         String xml = FileUtil.readUtf8String(Constant.serverXmlFile);
         Document document = Jsoup.parse(xml);
-        Element server = document.select("server").first();
-        return server.attr("name");
+        Elements elements = document.select("Connector");
+        for (Element element:elements){
+            int port = Convert.toInt(element.attr("port"));
+            Connector c = new Connector(service);
+            c.setPort(port);
+            result.add(c);
+        }
+        return result;
     }
 }

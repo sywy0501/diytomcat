@@ -88,9 +88,9 @@ public class Request {
         } else {
             path = "/" + path;
         }
-        context = service.getEngine().getDefaultHost().getContext(path);
+        context = engine.getDefaultHost().getContext(path);
         if (null == context) {
-            context = service.getEngine().getDefaultHost().getContext("/");
+            context = engine.getDefaultHost().getContext("/");
         }
     }
 }

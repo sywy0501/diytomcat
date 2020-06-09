@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Server>
-    <Server name="Catalina">
         <Service name="Catalina">
+            <Connector port = "18080"/>
+            <Connector port = "18081"/>
+            <Connector port = "18082"/>
             <Engine defaultHost = "localhost">
                 <Host name = "localhost">
                     <Context path="/b" docBase="/Users/chushi/develop/IdeaProjects/diytomcat/webapps/ROOT/b" />
                 </Host>
             </Engine>
         </Service>
-    </Server>
 </Server>

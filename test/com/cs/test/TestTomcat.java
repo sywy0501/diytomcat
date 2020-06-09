@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @create: 2020-05-29 15:43
  **/
 public class TestTomcat {
-    private static int port = 18080;
+    private static int port = 18081;
     private static String ip = "127.0.0.1";
     @BeforeClass
     public static void beforeClass(){
@@ -92,7 +92,7 @@ public class TestTomcat {
 
     @Test
     public void testaText(){
-        String response = getContentString("/a.text");
+        String response = getHttpString("/a.text");
         containAssert(response,"Content-Type:text/plain");
     }
 
@@ -134,8 +134,4 @@ public class TestTomcat {
         boolean match = StrUtil.containsAny(html,string);
         Assert.assertTrue(match);
     }
-
-
-
-
 }
