@@ -68,14 +68,14 @@ public class TestTomcat {
 
     @Test
     public void testaIndex(){
-        String html = "/a";
-        Assert.assertEquals(getContentString(html),"Hello DIY Tomcat from index.html@a");
+        String html = getContentString("/a");
+        Assert.assertEquals(html,"Hello DIY Tomcat from index.html@a");
     }
 
     @Test
     public void testbIndex(){
-        String html = "/b/";
-        Assert.assertEquals(getContentString(html),"Hello DIY Tomcat from index.html@b");
+        String html = getContentString("/b");
+        Assert.assertEquals(html,"Hello DIY Tomcat from index.html@b");
     }
 
     @Test
@@ -98,14 +98,20 @@ public class TestTomcat {
 
     @Test
     public void testPNG(){
-        byte[] response = getContentBytes("/logo.png");
-        Assert.assertEquals(24969,response.length);
+        byte[] bytes = getContentBytes("/logo.png");
+        Assert.assertEquals(24969,bytes.length);
     }
 
     @Test
     public void testPDF(){
-        byte[] response = getContentBytes("/etf.pdf");
-        Assert.assertEquals(3590775,response.length);
+        byte[] bytes = getContentBytes("/etf.pdf");
+        Assert.assertEquals(3590775,bytes.length);
+    }
+
+    @Test
+    public void testHelloServlet(){
+        String html = getContentString("/hello");
+        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet");
     }
 
     private String getContentString(String uri){

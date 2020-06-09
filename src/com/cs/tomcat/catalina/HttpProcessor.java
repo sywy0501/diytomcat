@@ -9,6 +9,7 @@ import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
 import com.cs.tomcat.util.WebXMLUtil;
+import com.cs.tomcat.webappservlet.HelloServlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  **/
 public class HttpProcessor {
 
-    public void execute(Socket s, Request request, Response response){
+    public void execute(Socket s, Request request, Response response) {
         try {
             //打开输入流准备接受浏览器提交信息
             String uri = request.getUri();
@@ -36,31 +37,35 @@ public class HttpProcessor {
             if ("/500.html".equals(uri)) {
                 throw new Exception("this is a deliberately create exception");
             }
-            //如果是"/"就返回原字符串
-            if ("/".equals(uri)) {
-                uri = WebXMLUtil.getWelcomeFile(request.getContext());
-            }
-            //获取文件名
-            String fileName = StrUtil.removePrefix(uri, "/");
-            //获取文件对象
-            File file = FileUtil.file(context.getDocBase(), fileName);
-            //文件存在则打印，不存在返回相关信息
-            if (file.exists()) {
-                String extName = FileUtil.extName(file);
-                String mimeType = WebXMLUtil.getMimeType(extName);
-                response.setContentType(mimeType);
-                //文件读取成二进制，放入response的body
-                byte[] body = FileUtil.readBytes(file);
-                response.setBody(body);
-
-                if (fileName.equals("timeConsume.html")) {
-                    ThreadUtil.sleep(1000);
-                }
+            if ("/hello".equals(uri)) {
+                HelloServlet helloServlet = new HelloServlet();
+                helloServlet.doGet(request, response);
             } else {
-                handle404(s, uri);
-                return;
-            }
+                //如果是"/"就返回原字符串
+                if ("/".equals(uri)) {
+                    uri = WebXMLUtil.getWelcomeFile(request.getContext());
+                }
+                //获取文件名
+                String fileName = StrUtil.removePrefix(uri, "/");
+                //获取文件对象
+                File file = FileUtil.file(context.getDocBase(), fileName);
+                //文件存在则打印，不存在返回相关信息
+                if (file.exists()) {
+                    String extName = FileUtil.extName(file);
+                    String mimeType = WebXMLUtil.getMimeType(extName);
+                    response.setContentType(mimeType);
+                    //文件读取成二进制，放入response的body
+                    byte[] body = FileUtil.readBytes(file);
+                    response.setBody(body);
 
+                    if (fileName.equals("timeConsume.html")) {
+                        ThreadUtil.sleep(1000);
+                    }
+                } else {
+                    handle404(s, uri);
+                    return;
+                }
+            }
             handle200(s, response);
         } catch (Exception e) {
             LogFactory.get().error(e);
