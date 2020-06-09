@@ -37,7 +37,7 @@ public class TestTomcat {
     @Test
     public void testHelloTomcat(){
         String html = getContentString("/");
-        Assert.assertEquals(html,"<div style='color:blue' >Hello DIY Tomcat!</div>");
+        Assert.assertEquals(html,"Hello DIY Tomcat");
     }
 
     @Test
