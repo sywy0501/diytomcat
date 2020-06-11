@@ -6,19 +6,10 @@ import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Service;
 import com.cs.tomcat.util.MiniBrowser;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author: cs
@@ -32,6 +23,8 @@ public class Request extends BaseRequest {
     private Socket socket;
     private Context context;
     private Service service;
+    //请求方式
+    private String method;
 
     public Request(Socket socket,Service service) throws IOException {
         this.socket = socket;
@@ -43,6 +36,7 @@ public class Request extends BaseRequest {
         parseUri();
         //如果当前context路径不是"/"，对uri进行修正
         parseContext();
+        parseMethod();
         if (!"/".equals(context.getPath())) {
             uri = StrUtil.removePrefix(uri, context.getPath());
             if (StrUtil.isEmpty(uri)){
@@ -100,5 +94,14 @@ public class Request extends BaseRequest {
         if (null == context) {
             context = engine.getDefaultHost().getContext("/");
         }
+    }
+
+    private void parseMethod(){
+        method = StrUtil.subBefore(requestString," ",false);
+    }
+
+    @Override
+    public String getMethod(){
+        return method;
     }
 }

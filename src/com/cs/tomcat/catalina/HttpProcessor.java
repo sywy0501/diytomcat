@@ -6,6 +6,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.LogFactory;
+import com.cs.tomcat.http.InvokerServlet;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
@@ -39,8 +40,7 @@ public class HttpProcessor {
 
 
             if (null!=servletClassName){
-                Object servletObject = ReflectUtil.newInstance(servletClassName);
-                ReflectUtil.invoke(servletObject,"doGet",request,response);
+                InvokerServlet.getInstance().service(request,response);
             }else {
                 if ("/500.html".equals(uri)) {
                     throw new Exception("this is a deliberately create exception");
