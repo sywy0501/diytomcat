@@ -114,6 +114,12 @@ public class TestTomcat {
         Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet");
     }
 
+    @Test
+    public void testHello(){
+        String html = getContentString("/j2ee/hello");
+        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
