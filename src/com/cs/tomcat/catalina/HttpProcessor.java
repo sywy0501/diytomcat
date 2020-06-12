@@ -6,6 +6,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.LogFactory;
+import com.cs.tomcat.http.DefaultServlet;
 import com.cs.tomcat.http.InvokerServlet;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
@@ -37,41 +38,21 @@ public class HttpProcessor {
             Context context = request.getContext();
             String servletClassName = context.getServletClassName(uri);
 
-
-
             if (null!=servletClassName){
                 InvokerServlet.getInstance().service(request,response);
             }else {
-                if ("/500.html".equals(uri)) {
-                    throw new Exception("this is a deliberately create exception");
-                }else {
-                    //如果是"/"就返回原字符串
-                    if ("/".equals(uri)) {
-                        uri = WebXMLUtil.getWelcomeFile(request.getContext());
-                    }
-                    //获取文件名
-                    String fileName = StrUtil.removePrefix(uri, "/");
-                    //获取文件对象
-                    File file = FileUtil.file(context.getDocBase(), fileName);
-                    //文件存在则打印，不存在返回相关信息
-                    if (file.exists()) {
-                        String extName = FileUtil.extName(file);
-                        String mimeType = WebXMLUtil.getMimeType(extName);
-                        response.setContentType(mimeType);
-                        //文件读取成二进制，放入response的body
-                        byte[] body = FileUtil.readBytes(file);
-                        response.setBody(body);
+                DefaultServlet.getInstance().service(request,response);
 
-                        if (fileName.equals("timeConsume.html")) {
-                            ThreadUtil.sleep(1000);
-                        }
-                    } else {
-                        handle404(s, uri);
-                        return;
-                    }
+                if (Constant.CODE_200==response.getStatus()){
+                    handle200(s,response);
+                    return;
+                }
+
+                if (Constant.CODE_404==response.getStatus()){
+                    handle404(s,uri);
+                    return;
                 }
             }
-            handle200(s, response);
         } catch (Exception e) {
             LogFactory.get().error(e);
             handle500(s, e);

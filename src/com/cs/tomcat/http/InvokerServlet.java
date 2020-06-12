@@ -2,6 +2,7 @@ package com.cs.tomcat.http;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.cs.tomcat.catalina.Context;
+import com.cs.tomcat.util.Constant;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,6 +31,7 @@ public class InvokerServlet extends HttpServlet {
      * @return: void
      * @desc: 提供service方法，根据请求的uri获取servletClassName，然后实例化
      */
+    @Override
     public void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)throws IOException , ServletException {
         Request request = (Request) httpServletRequest;
         Response response = (Response) httpServletResponse;
@@ -40,5 +42,7 @@ public class InvokerServlet extends HttpServlet {
 
         Object servletObject = ReflectUtil.newInstance(servletClassName);
         ReflectUtil.invoke(servletObject,"service",request,response);
+
+        response.setStatus(Constant.CODE_200);
     }
 }
