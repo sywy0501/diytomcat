@@ -1,6 +1,9 @@
 package com.cs.tomcat;
 
 import com.cs.tomcat.catalina.*;
+import com.cs.tomcat.classloader.CommonClassLoader;
+
+import java.lang.reflect.Method;
 
 /**
  * @description:
@@ -9,8 +12,15 @@ import com.cs.tomcat.catalina.*;
  **/
 public class Bootstrap {
 
-    public static void main(String[] args) {
-        Server server = new Server();
-        server.start();
+    public static void main(String[] args)throws Exception {
+        /*Server server = new Server();
+        server.start();*/
+        CommonClassLoader commonClassLoader = new CommonClassLoader();
+        Thread.currentThread().setContextClassLoader(commonClassLoader);
+        String serverClassName = "com.cs.tomcat.catalina.Server";
+        Class<?> serverClazz = commonClassLoader.loadClass(serverClassName);
+        Object serverObject = serverClazz.newInstance();
+        Method m = serverClazz.getMethod("start");
+        m.invoke(serverObject);
     }
 }

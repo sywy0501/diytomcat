@@ -38,20 +38,20 @@ public class HttpProcessor {
             Context context = request.getContext();
             String servletClassName = context.getServletClassName(uri);
 
-            if (null!=servletClassName){
-                InvokerServlet.getInstance().service(request,response);
-            }else {
-                DefaultServlet.getInstance().service(request,response);
+            if (null != servletClassName) {
+                InvokerServlet.getInstance().service(request, response);
+            } else {
+                DefaultServlet.getInstance().service(request, response);
+            }
 
-                if (Constant.CODE_200==response.getStatus()){
-                    handle200(s,response);
-                    return;
-                }
+            if (Constant.CODE_200 == response.getStatus()) {
+                handle200(s, response);
+                return;
+            }
 
-                if (Constant.CODE_404==response.getStatus()){
-                    handle404(s,uri);
-                    return;
-                }
+            if (Constant.CODE_404 == response.getStatus()) {
+                handle404(s, uri);
+                return;
             }
         } catch (Exception e) {
             LogFactory.get().error(e);
