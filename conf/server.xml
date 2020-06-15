@@ -7,7 +7,7 @@
             <Engine defaultHost = "localhost">
                 <Host name = "localhost">
                     <Context path="/b" docBase="/Users/chushi/develop/IdeaProjects/diytomcat/webapps/ROOT/b" />
-                    <Context path="/javaweb" docBase="/Users/chushi/develop/IdeaProjects/javaweb/web" />
+                    <Context path="/javaweb" docBase="/Users/chushi/develop/IdeaProjects/javaweb/web" reloadable="true" />
                 </Host>
             </Engine>
         </Service>

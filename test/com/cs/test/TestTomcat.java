@@ -117,7 +117,7 @@ public class TestTomcat {
     @Test
     public void testHelloWeb(){
         String html = getContentString("/javaweb/hello");
-        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet@javaweb");
+        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet@javaweb!");
     }
 
     private String getContentString(String uri){

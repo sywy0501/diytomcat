@@ -8,6 +8,7 @@ import cn.hutool.log.LogFactory;
 import com.cs.tomcat.classloader.WebappClassLoader;
 import com.cs.tomcat.exception.WebConfigDuplicatedException;
 import com.cs.tomcat.util.ContextXMLUtil;
+import com.cs.tomcat.wathcer.ContextFileChangeWatcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -37,8 +38,16 @@ public class Context {
 
     private WebappClassLoader webappClassLoader;
 
-    public Context(String path,String docBase){
+    private Host host;
+
+    private boolean reloadable;
+
+    private ContextFileChangeWatcher contextFileChangeWatcher;
+
+    public Context(String path,String docBase,Host host,boolean reloadable){
         TimeInterval timeInterval = DateUtil.timer();
+        this.host = host;
+        this.reloadable = reloadable;
         this.path = path;
         this.docBase = docBase;
         this.contextWebXmlFile = new File(docBase, ContextXMLUtil.getWatchedResource());
@@ -53,6 +62,14 @@ public class Context {
         LogFactory.get().info("Deploying web application directory {}", this.docBase);
         deploy();
         LogFactory.get().info("Deployment of web application directory {} has finished in {} ms", this.docBase,timeInterval.intervalMs());
+    }
+
+    public boolean isReloadable(){
+        return reloadable;
+    }
+
+    public void setReloadable(boolean reloadable){
+        this.reloadable = reloadable;
     }
 
     public String getPath() {
@@ -155,10 +172,20 @@ public class Context {
     }
 
     private void deploy(){
-        TimeInterval timeInterval = DateUtil.timer();
-        LogFactory.get().info("Deploying web application directory:{}",this.docBase);
         init();
-        LogFactory.get().info("Deployment of web application directory {} has finished in {} ms",this.getDocBase(),timeInterval.intervalMs());
+        if (reloadable){
+            contextFileChangeWatcher = new ContextFileChangeWatcher(this);
+            contextFileChangeWatcher.start();
+        }
+    }
+
+    public void stop(){
+        webappClassLoader.stop();
+        contextFileChangeWatcher.stop();
+    }
+
+    public void reload(){
+        host.reload(this);
     }
 
     public String getServletClassName(String uri){
