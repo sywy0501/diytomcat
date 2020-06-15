@@ -29,7 +29,7 @@ public class Server {
 
     private static void logJVM() {
         Map<String, String> infos = new LinkedHashMap<>();
-        infos.put("Server version", "How2j DiyTomcat/1.0.1");
+        infos.put("Server version", "DiyTomcat/1.0.1");
         infos.put("Server built", "2020-04-08 10:20:22");
         infos.put("Server number", "1.0.1");
         infos.put("OS Name\t", SystemUtil.get("os.name"));
