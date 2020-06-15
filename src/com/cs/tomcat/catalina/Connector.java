@@ -1,22 +1,13 @@
 package com.cs.tomcat.catalina;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.LogFactory;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
-import com.cs.tomcat.util.Constant;
 import com.cs.tomcat.util.ThreadPoolUtil;
-import com.cs.tomcat.util.WebXMLUtil;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @description: 端口映射类
