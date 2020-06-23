@@ -6,6 +6,7 @@ import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Service;
 import com.cs.tomcat.util.MiniBrowser;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -50,6 +51,14 @@ public class Request extends BaseRequest {
         //由于浏览器使用长链接，链接不会主动关闭 如果fully设置true 读取到不够bufferSize就不继续读取，就会卡住
         byte[] bytes = MiniBrowser.readBytes(is,false);
         requestString = new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public ServletContext getServletContext(){
+        return context.getServletContext();
+    }
+
+    public String getRealPath(String path){
+        return context.getServletContext().getRealPath(path);
     }
 
     private void parseUri() {

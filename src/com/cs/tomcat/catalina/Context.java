@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.LogFactory;
 import com.cs.tomcat.classloader.WebappClassLoader;
 import com.cs.tomcat.exception.WebConfigDuplicatedException;
+import com.cs.tomcat.http.ApplicationContext;
 import com.cs.tomcat.util.ContextXMLUtil;
 import com.cs.tomcat.wathcer.ContextFileChangeWatcher;
 import org.jsoup.Jsoup;
@@ -14,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.util.*;
 
@@ -44,6 +46,8 @@ public class Context {
 
     private ContextFileChangeWatcher contextFileChangeWatcher;
 
+    private ServletContext servletContext;
+
     public Context(String path,String docBase,Host host,boolean reloadable){
         TimeInterval timeInterval = DateUtil.timer();
         this.host = host;
@@ -55,6 +59,7 @@ public class Context {
         this.url_servletName = new HashMap<>();
         this.servletName_className = new HashMap<>();
         this.className_servletName = new HashMap<>();
+        this.servletContext = new ApplicationContext(this);
 
         ClassLoader commonClassLoader = Thread.currentThread().getContextClassLoader();
         this.webappClassLoader = new WebappClassLoader(docBase,commonClassLoader);
@@ -62,6 +67,10 @@ public class Context {
         LogFactory.get().info("Deploying web application directory {}", this.docBase);
         deploy();
         LogFactory.get().info("Deployment of web application directory {} has finished in {} ms", this.docBase,timeInterval.intervalMs());
+    }
+
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 
     public boolean isReloadable(){
