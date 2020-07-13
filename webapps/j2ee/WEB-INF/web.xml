@@ -3,6 +3,14 @@
     <servlet>
         <servlet-name>HelloServlet</servlet-name>
         <servlet-class>com.cs.tomcat.webappservlet.HelloServlet</servlet-class>
+        <init-param>
+            <param-name>author</param-name>
+            <param-value>(sywy)servlet</param-value>
+        </init-param>
+        <init-param>
+            <param-name>site</param-name>
+            <param-value>(cs)servlet</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>
