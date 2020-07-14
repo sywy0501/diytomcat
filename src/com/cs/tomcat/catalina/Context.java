@@ -56,6 +56,8 @@ public class Context {
 
     private Map<String, Map<String, String>> servletClassNameInitParams;
 
+    private List<String> loadOnStartupServletClassNames;
+
     public Context(String path, String docBase, Host host, boolean reloadable) {
         TimeInterval timeInterval = DateUtil.timer();
         this.host = host;
@@ -70,6 +72,7 @@ public class Context {
         this.servletContext = new ApplicationContext(this);
         this.servletPool = new HashMap<>();
         this.servletClassNameInitParams = new HashMap<>();
+        this.loadOnStartupServletClassNames = new ArrayList<>();
 
         ClassLoader commonClassLoader = Thread.currentThread().getContextClassLoader();
         this.webappClassLoader = new WebappClassLoader(docBase, commonClassLoader);
@@ -95,6 +98,31 @@ public class Context {
             servletPool.put(clazz, servlet);
         }
         return servlet;
+    }
+
+    /**
+     * @desc: 解析需要做自启动的类
+     */
+    public void parseLoadOnStartup(Document d){
+        Elements es = d.select("load-on-startup");
+        for (Element e:es){
+            String loadOnStartupServletClassName = e.parent().select("servlet-class").text();
+            loadOnStartupServletClassNames.add(loadOnStartupServletClassName);
+        }
+    }
+
+    /**
+     * @desc: 对相关的类做自启动
+     */
+    public void handleLoadOnStartup(){
+        for (String loadOnStartupServletClassName:loadOnStartupServletClassNames){
+            try {
+                Class<?> clazz = webappClassLoader.loadClass(loadOnStartupServletClassName);
+                getServlet(clazz);
+            }catch (ClassNotFoundException|InstantiationException|IllegalAccessException|ServletException e){
+                LogFactory.get().info(e.getMessage());
+            }
+        }
     }
 
     public ServletContext getServletContext() {
@@ -207,6 +235,8 @@ public class Context {
         Document d = Jsoup.parse(xml);
         parseServletMapping(d);
         parseServletInitParams(d);
+        parseLoadOnStartup(d);
+        handleLoadOnStartup();
     }
 
     private void deploy() {
