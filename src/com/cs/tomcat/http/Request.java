@@ -1,6 +1,9 @@
 package com.cs.tomcat.http;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
+import cn.hutool.log.LogFactory;
 import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Service;
@@ -11,6 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: cs
@@ -26,10 +33,13 @@ public class Request extends BaseRequest {
     private Service service;
     //请求方式
     private String method;
+    private String queryString;
+    private Map<String,String[]> parameterMap;
 
     public Request(Socket socket,Service service) throws IOException {
         this.socket = socket;
         this.service = service;
+        this.parameterMap = new HashMap<>();
         parseHttpRequest();
         if (StrUtil.isEmpty(requestString)) {
             return;
@@ -44,6 +54,7 @@ public class Request extends BaseRequest {
                 uri = "/";
             }
         }
+        parseParameters();
     }
 
     private void parseHttpRequest() throws IOException {
@@ -51,6 +62,39 @@ public class Request extends BaseRequest {
         //由于浏览器使用长链接，链接不会主动关闭 如果fully设置true 读取到不够bufferSize就不继续读取，就会卡住
         byte[] bytes = MiniBrowser.readBytes(is,false);
         requestString = new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    private void parseParameters(){
+        LogFactory.get().info(requestString);
+        if ("GET".equals(this.getMethod())){
+            String url = StrUtil.subBetween(requestString," "," ");
+            if (StrUtil.contains(url,'?')){
+                queryString = StrUtil.subAfter(url,'?',false);
+            }
+        }
+        if ("POST".equals(this.getMethod())){
+            queryString = StrUtil.subAfter(requestString,"\r\n\r\n",false);
+        }
+        if (null==queryString||0==queryString.length()){
+            return;
+        }
+        queryString = URLUtil.decode(queryString);
+        String[] parameterValues = queryString.split("&");
+        if (null!=parameterValues){
+            for (String parameterValue:parameterValues){
+                String[] nameValues = parameterValue.split("=");
+                String name =nameValues[0];
+                String value = nameValues[1];
+                String values[] = parameterMap.get(name);
+                if (null == values){
+                    values = new String[]{value};
+                    parameterMap.put(name,values);
+                }else {
+                    values = ArrayUtil.append(values,value);
+                    parameterMap.put(name,values);
+                }
+            }
+        }
     }
 
     public ServletContext getServletContext(){
@@ -112,5 +156,25 @@ public class Request extends BaseRequest {
     @Override
     public String getMethod(){
         return method;
+    }
+
+    public String getParameter(String name){
+        String[] values=parameterMap.get(name);
+        if (null!=values&&0!=values.length){
+            return values[0];
+        }
+        return null;
+    }
+
+    public Map getParameterMap(){
+        return parameterMap;
+    }
+
+    public Enumeration getParameterNames(){
+        return Collections.enumeration(parameterMap.keySet());
+    }
+
+    public String[] getParameterValues(String name){
+        return parameterMap.get(name);
     }
 }

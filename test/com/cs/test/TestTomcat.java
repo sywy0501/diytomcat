@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -117,7 +119,27 @@ public class TestTomcat {
     @Test
     public void testHelloWeb(){
         String html = getContentString("/javaweb/hello");
-        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet@javaweb!");
+        Assert.assertEquals(html,"Hello DIY Tomcat from HelloServlet");
+    }
+
+    @Test
+    public void testGetParam(){
+        String uri = "/javaweb/param";
+        String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
+        Map<String, Object> params = new HashMap<>();
+        params.put("name","cs");
+        String html = MiniBrowser.getContentString(url,params,true);
+        Assert.assertEquals(html,"get name:cs");
+    }
+
+    @Test
+    public void testPostParam(){
+        String uri = "/javaweb/param";
+        String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
+        Map<String,Object> params = new HashMap<>();
+        params.put("name","cs");
+        String html = MiniBrowser.getContentString(url,params,false);
+        Assert.assertEquals(html,"post name:cs");
     }
 
     private String getContentString(String uri){
