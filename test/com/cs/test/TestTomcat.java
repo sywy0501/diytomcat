@@ -142,6 +142,12 @@ public class TestTomcat {
         Assert.assertEquals(html,"post name:cs");
     }
 
+    @Test
+    public void testHeader(){
+        String html = getContentString("/javaweb/header");
+        Assert.assertEquals(html,"mini brower / java1.8");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
