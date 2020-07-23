@@ -148,6 +148,13 @@ public class TestTomcat {
         Assert.assertEquals(html,"mini brower / java1.8");
     }
 
+    @Test
+    public void testsetCookie(){
+        String html = getHttpString("/javaweb/setCookie");
+        System.out.println(html);
+        containAssert(html,"Set-Cookie:name=cs(cookie);Expires=");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);

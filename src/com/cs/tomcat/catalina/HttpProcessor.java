@@ -72,7 +72,8 @@ public class HttpProcessor {
         //根据response对象上的contentType，组成返回的头信息，并转换成字节数组
         String contentType = response.getContentType();
         String headText = Constant.RESPONSE_HEAD_202;
-        headText = StrUtil.format(headText, contentType);
+        String cookiesHeader = response.getCookiesHeader();
+        headText = StrUtil.format(headText, contentType,cookiesHeader);
 
         byte[] head = headText.getBytes();
         //获取主题信息部分，即html对应的字节数组
