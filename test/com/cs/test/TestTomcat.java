@@ -2,6 +2,7 @@ package com.cs.test;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.NetUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cs.tomcat.util.MiniBrowser;
@@ -9,6 +10,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -149,10 +154,40 @@ public class TestTomcat {
     }
 
     @Test
-    public void testsetCookie(){
+    public void testSetCookie(){
         String html = getHttpString("/javaweb/setCookie");
         System.out.println(html);
         containAssert(html,"Set-Cookie:name=cs(cookie);Expires=");
+    }
+
+    @Test
+    public void testGetCookie()throws IOException {
+        String url = StrUtil.format("http://{}:{}{}",ip,port,"/javaweb/getCookie");
+        URL u = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+        conn.setRequestProperty("Cookie","name=cs(cookie)");
+        conn.connect();
+        InputStream is = conn.getInputStream();
+        String html = IoUtil.read(is,"utf-8");
+        System.out.println(html);
+        containAssert(html,"name:cs(cookie)");
+    }
+
+    @Test
+    public void testGetSession()throws IOException{
+        String jsessionid = getContentString("/javaweb/setSession");
+        if (null==jsessionid){
+            jsessionid = jsessionid.trim();
+        }
+        String url = StrUtil.format("http://{}:{}{}", ip,port,"/javaweb/getSession");
+        URL u = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+        conn.setRequestProperty("Cookie","JSESSIONID="+jsessionid);
+        conn.connect();
+        InputStream is = conn.getInputStream();
+        String html = IoUtil.read(is,"utf-8");
+        System.out.println(html);
+        containAssert(html,"Gareen(session)");
     }
 
     private String getContentString(String uri){

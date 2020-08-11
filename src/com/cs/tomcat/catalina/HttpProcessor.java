@@ -11,10 +11,9 @@ import com.cs.tomcat.http.InvokerServlet;
 import com.cs.tomcat.http.Request;
 import com.cs.tomcat.http.Response;
 import com.cs.tomcat.util.Constant;
-import com.cs.tomcat.util.WebXMLUtil;
-import com.cs.tomcat.webappservlet.HelloServlet;
+import com.cs.tomcat.util.SessionManager;
 
-import java.io.File;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -34,6 +33,7 @@ public class HttpProcessor {
             if (null == uri) {
                 return;
             }
+            prepareSession(request, response);
             System.out.println("uri: " + uri);
             Context context = request.getContext();
             String servletClassName = context.getServletClassName(uri);
@@ -121,5 +121,11 @@ public class HttpProcessor {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+    }
+
+    public void prepareSession(Request request,Response response){
+        String jsessionid = request.getJSessionIdFromCookie();
+        HttpSession session = SessionManager.getSession(jsessionid,request,response);
+        request.setSession(session);
     }
 }

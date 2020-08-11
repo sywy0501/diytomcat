@@ -12,6 +12,8 @@ import com.cs.tomcat.catalina.Service;
 import com.cs.tomcat.util.MiniBrowser;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -38,6 +40,10 @@ public class Request extends BaseRequest {
     private Map<String,String[]> parameterMap;
     private Map<String, String> headerMap;
 
+    private Cookie[] cookies;
+
+    private HttpSession session;
+
     public Request(Socket socket,Service service) throws IOException {
         this.socket = socket;
         this.service = service;
@@ -60,6 +66,50 @@ public class Request extends BaseRequest {
         parseParameters();
         parseHeaders();
         LogFactory.get().info(headerMap.toString());
+        parseCookies();
+    }
+
+    public HttpSession getSession(){
+        return session;
+    }
+
+    public void setSession(HttpSession session){
+        this.session = session;
+    }
+
+    public String getJSessionIdFromCookie(){
+        if (null==cookies){
+            return null;
+        }
+        for (Cookie cookie:cookies){
+            if ("JSESSIONID".equals(cookie.getName())){
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    public Cookie[] getCookies(){
+        return cookies;
+    }
+
+    public void parseCookies(){
+        List<Cookie> cookieList = new ArrayList<>();
+        String cookies = headerMap.get("cookie");
+        if (null!=cookies){
+            String[] pairs = StrUtil.split(cookies,";");
+            for (String pair:pairs){
+                if (StrUtil.isBlank(pair)){
+                    continue;
+                }
+                String[] segs = StrUtil.split(pair,"=");
+                String name = segs[0].trim();
+                String value = segs[1].trim();
+                Cookie cookie = new Cookie(name, value);
+                cookieList.add(cookie);
+            }
+        }
+        this.cookies = ArrayUtil.toArray(cookieList,Cookie.class);
     }
 
     private void parseHttpRequest() throws IOException {
