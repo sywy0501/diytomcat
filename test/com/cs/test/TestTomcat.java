@@ -197,7 +197,7 @@ public class TestTomcat {
         byte[] unGzipContent = ZipUtil.unGzip(gzipContent);
         String html = new String(unGzipContent);
         System.out.println(html);
-        Assert.assertEquals(html,"Hello DIY Tomcat");
+        Assert.assertEquals(html,"Hello DIY Tomcat" );
     }
 
     private String getContentString(String uri){
