@@ -203,7 +203,7 @@ public class TestTomcat {
     @Test
     public void testJsp(){
         String html = getContentString("/javaweb/");
-        Assert.assertEquals(html,"hello jsp@javaweb");
+        Assert.assertEquals(html,"hello jsp@javaweb" );
     }
 
     private String getContentString(String uri){
