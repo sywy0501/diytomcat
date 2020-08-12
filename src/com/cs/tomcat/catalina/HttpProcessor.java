@@ -5,6 +5,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import cn.hutool.log.LogFactory;
 import com.cs.tomcat.http.DefaultServlet;
 import com.cs.tomcat.http.InvokerServlet;
@@ -45,7 +46,7 @@ public class HttpProcessor {
             }
 
             if (Constant.CODE_200 == response.getStatus()) {
-                handle200(s, response);
+                handle200(s,request,response);
                 return;
             }
 
@@ -67,7 +68,7 @@ public class HttpProcessor {
         }
     }
 
-    private static void handle200(Socket s, Response response) throws IOException {
+    /*private static void handle200(Socket s, Response response) throws IOException {
         //准备发送的数据
         //根据response对象上的contentType，组成返回的头信息，并转换成字节数组
         String contentType = response.getContentType();
@@ -86,6 +87,43 @@ public class HttpProcessor {
         //将字符串转换成字节数组发出去
         OutputStream os = s.getOutputStream();
         os.write(responseBytes);
+    }*/
+
+    /**
+     * @author: ChuShi
+     * @date: 2020/8/12 9:23 上午
+     * @param s
+     * @param request
+     * @param response
+     * @return: void
+     * @desc: 需要进行gzip压缩的使用gzip投，把body用zipUtil进行zip压缩
+     */
+    private void handle200(Socket s,Request request,Response response)throws IOException{
+        OutputStream os = s.getOutputStream();
+        String contentType = response.getContentType();
+
+        byte[] body = response.getBody();
+        String cookiesHeader = response.getCookiesHeader();
+
+        boolean gzip = isGzip(request,body,contentType);
+
+        String headText;
+        if (gzip){
+            headText = Constant.response_head_200_gzip;
+        }else {
+            headText = Constant.response_head_200;
+        }
+        headText = StrUtil.format(headText,contentType,cookiesHeader);
+        if (gzip){
+            body = ZipUtil.gzip(body);
+        }
+        byte[] head = headText.getBytes();
+        byte[] responseBytes = new byte[head.length+body.length];
+        ArrayUtil.copy(head,0,responseBytes,0,head.length);
+        ArrayUtil.copy(body,0,responseBytes,head.length,body.length);
+        os.write(responseBytes,0,responseBytes.length);
+        os.flush();
+        os.close();
     }
 
     protected void handle404(Socket s, String uri) throws IOException {
@@ -127,5 +165,49 @@ public class HttpProcessor {
         String jsessionid = request.getJSessionIdFromCookie();
         HttpSession session = SessionManager.getSession(jsessionid,request,response);
         request.setSession(session);
+    }
+
+    /**
+     * @author: ChuShi
+     * @date: 2020/8/12 9:24 上午
+     * @param request
+     * @param body
+     * @param mimeType
+     * @return: boolean
+     * @desc: 判断是否要进行gzip压缩
+     */
+    private boolean isGzip(Request request,byte[] body,String mimeType){
+        String acceptEncodings = request.getHeader("Accept-Encoding");
+        if (!StrUtil.containsAny(acceptEncodings,"gzip")){
+            return false;
+        }
+
+        Connector connector = request.getConnector();
+        if (mimeType.contains(";")){
+            mimeType=StrUtil.subBefore(mimeType,";",false);
+        }
+        if (!"on".equals(connector.getCompression())){
+            return false;
+        }
+        if (body.length<connector.getCompressionMinSize()){
+            return false;
+        }
+        String userAgents = connector.getNoCompressionUserAgents();
+        String[] eachUserAgents = userAgents.split(",");
+        for (String eachUserAgent:eachUserAgents){
+            eachUserAgent = eachUserAgent.trim();
+            String userAgent = request.getHeader("User-Agent");
+            if (StrUtil.containsAny(userAgent,eachUserAgent)){
+                return false;
+            }
+        }
+        String mimeTypes = connector.getCompressableMimeType();
+        String[] eachMineTypes = mimeTypes.split(",");
+        for (String eachMineType:eachMineTypes){
+            if (mimeType.equals(eachMineType)){
+                return true;
+            }
+        }
+        return false;
     }
 }

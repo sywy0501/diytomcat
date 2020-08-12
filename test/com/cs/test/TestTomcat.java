@@ -5,6 +5,7 @@ import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.NetUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.cs.tomcat.util.MiniBrowser;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @create: 2020-05-29 15:43
  **/
 public class TestTomcat {
-    private static int port = 18081;
+    private static int port = 18080;
     private static String ip = "127.0.0.1";
     @BeforeClass
     public static void beforeClass(){
@@ -188,6 +189,15 @@ public class TestTomcat {
         String html = IoUtil.read(is,"utf-8");
         System.out.println(html);
         containAssert(html,"Gareen(session)");
+    }
+
+    @Test
+    public void testGzip(){
+        byte[] gzipContent = getContentBytes("/",true);
+        byte[] unGzipContent = ZipUtil.unGzip(gzipContent);
+        String html = new String(unGzipContent);
+        System.out.println(html);
+        Assert.assertEquals(html,"Hello DIY Tomcat");
     }
 
     private String getContentString(String uri){

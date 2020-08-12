@@ -23,6 +23,16 @@ public class Constant {
             "HTTP/1.1 404 Not Found\r\n" +
                     "Content-Type: text/html\r\n\r\n";
 
+    public static final String response_head_200 =
+            "HTTP/1.1 200 OK\r\n" +
+                    "Content-Type: {}{}" +
+                    "\r\n\r\n";
+
+    public static final String response_head_200_gzip =
+            "HTTP/1.1 200 OK\r\nContent-Type: {}{}\r\n" +
+                    "Content-Encoding:gzip" +
+                    "\r\n\r\n";
+
     public static final String textFormat_404 =
             "<html><head><title>DIY Tomcat/1.0.1 - Error report</title><style>" +
                     "<!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} " +

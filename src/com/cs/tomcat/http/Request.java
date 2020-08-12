@@ -6,6 +6,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.log.LogFactory;
+import com.cs.tomcat.catalina.Connector;
 import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Service;
@@ -33,7 +34,7 @@ public class Request extends BaseRequest {
     private String uri;
     private Socket socket;
     private Context context;
-    private Service service;
+    private Connector connector;
     //请求方式
     private String method;
     private String queryString;
@@ -44,9 +45,9 @@ public class Request extends BaseRequest {
 
     private HttpSession session;
 
-    public Request(Socket socket,Service service) throws IOException {
+    public Request(Socket socket,Connector connector) throws IOException {
         this.socket = socket;
-        this.service = service;
+        this.connector = connector;
         this.parameterMap = new HashMap<>();
         this.headerMap = new HashMap<>();
         parseHttpRequest();
@@ -67,6 +68,10 @@ public class Request extends BaseRequest {
         parseHeaders();
         LogFactory.get().info(headerMap.toString());
         parseCookies();
+    }
+
+    public Connector getConnector(){
+        return connector;
     }
 
     public HttpSession getSession(){
@@ -187,6 +192,7 @@ public class Request extends BaseRequest {
      * 增加解析Context的方法，通过获取uri中的信息来得到path，然后根据这个path来获取Context对象。如果获取不到 就获取对应的Root Context
      */
     private void parseContext() {
+        Service service = connector.getService();
         Engine engine = service.getEngine();
         context = engine.getDefaultHost().getContext(uri);
         if (null!=context){
