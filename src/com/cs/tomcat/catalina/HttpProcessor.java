@@ -1,16 +1,10 @@
 package com.cs.tomcat.catalina;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.log.LogFactory;
-import com.cs.tomcat.http.DefaultServlet;
-import com.cs.tomcat.http.InvokerServlet;
-import com.cs.tomcat.http.Request;
-import com.cs.tomcat.http.Response;
+import com.cs.tomcat.http.*;
 import com.cs.tomcat.util.Constant;
 import com.cs.tomcat.util.SessionManager;
 
@@ -41,6 +35,8 @@ public class HttpProcessor {
 
             if (null != servletClassName) {
                 InvokerServlet.getInstance().service(request, response);
+            }else  if (uri.endsWith(".jsp")){
+                JspServlet.getInstance().service(request,response);
             } else {
                 DefaultServlet.getInstance().service(request, response);
             }
