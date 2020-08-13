@@ -206,6 +206,12 @@ public class TestTomcat {
         Assert.assertEquals(html,"hello jsp@javaweb" );
     }
 
+    @Test
+    public void testAJsp(){
+        String html = getContentString("/javaweb/a.jsp");
+        System.out.println(html);
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
