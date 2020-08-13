@@ -34,7 +34,7 @@ public class HttpProcessor {
             String servletClassName = context.getServletClassName(uri);
 
             if (null != servletClassName) {
-                InvokerServlet.getInstance().service(request, response);
+                InvokeServlet.getInstance().service(request, response);
             }else  if (uri.endsWith(".jsp")){
                 JspServlet.getInstance().service(request,response);
             } else {
@@ -43,6 +43,11 @@ public class HttpProcessor {
 
             if (Constant.CODE_200 == response.getStatus()) {
                 handle200(s,request,response);
+                return;
+            }
+
+            if (Constant.CODE_302==response.getStatus()){
+                handle302(s,response);
                 return;
             }
 
@@ -155,6 +160,15 @@ public class HttpProcessor {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+    }
+
+    private void handle302(Socket s,Response response)throws IOException{
+        OutputStream os = s.getOutputStream();
+        String redirectPath = response.getRedirectPath();
+        String head_text = Constant.response_head_302;
+        String header = StrUtil.format(head_text,redirectPath);
+        byte[] responseBytes = header.getBytes(StandardCharsets.UTF_8);
+        os.write(responseBytes);
     }
 
     public void prepareSession(Request request,Response response){

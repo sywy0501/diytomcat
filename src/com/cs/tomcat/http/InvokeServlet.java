@@ -1,6 +1,7 @@
 package com.cs.tomcat.http;
 
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.log.LogFactory;
 import com.cs.tomcat.catalina.Context;
 import com.cs.tomcat.util.Constant;
 
@@ -15,13 +16,13 @@ import java.io.IOException;
  * @author: chushi
  * @create: 2020-06-11 14:19
  **/
-public class InvokerServlet extends HttpServlet {
-    private static InvokerServlet instance = new InvokerServlet();
-    public static synchronized InvokerServlet getInstance(){
+public class InvokeServlet extends HttpServlet {
+    private static InvokeServlet instance = new InvokeServlet();
+    public static synchronized InvokeServlet getInstance(){
         return instance;
     }
 
-    private InvokerServlet(){}
+    private InvokeServlet(){}
 
     /**
      * @author: ChuShi
@@ -42,11 +43,16 @@ public class InvokerServlet extends HttpServlet {
 
         try {
             Class servletClass = context.getWebappClassLoader().loadClass(servletClassName);
-            System.out.println("servletClass:"+servletClass);
-            System.out.println("servletClass'classLoader:"+servletClass.getClassLoader());
+            LogFactory.get().info("servletClass:"+servletClass);
+            LogFactory.get().info("servletClass'classLoader:"+servletClass.getClassLoader());
             Object servletObject = context.getServlet(servletClass);
             ReflectUtil.invoke(servletObject,"service",request,response);
-            response.setStatus(Constant.CODE_200);
+
+            if (null!=response.getRedirectPath()){
+                response.setStatus(Constant.CODE_302);
+            }else {
+                response.setStatus(Constant.CODE_200);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

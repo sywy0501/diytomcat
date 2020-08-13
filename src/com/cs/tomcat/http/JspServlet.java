@@ -77,13 +77,13 @@ public class JspServlet extends HttpServlet {
                 String jspServletClassName = JspUtil.getJspServletClassName(uri,subFolder);
                 //通过JspClassLoader根据servletClassName加载类对象jspServletClass
                 Class jspServletClass = jspClassLoader.loadClass(jspServletClassName);
-
-                /*byte[] body = FileUtil.readBytes(file);
-                response.setBody(body);*/
                 //使用context的getServlet获取servlet实例
                 HttpServlet servlet = context.getServlet(jspServletClass);
                 servlet.service(request, response);
-                response.setStatus(Constant.CODE_200);
+                if(null!=response.getRedirectPath())
+                    response.setStatus(Constant.CODE_302);
+                else
+                    response.setStatus(Constant.CODE_200);
             } else {
                 response.setStatus(Constant.CODE_404);
             }

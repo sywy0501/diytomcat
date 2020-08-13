@@ -35,6 +35,9 @@ public class Constant {
                     "Content-Encoding:gzip" +
                     "\r\n\r\n";
 
+    public static final String response_head_302 =
+            "HTTP/1.1 302 Found\r\nLocation: {}\r\n\r\n";
+
     public static final String textFormat_404 =
             "<html><head><title>DIY Tomcat/1.0.1 - Error report</title><style>" +
                     "<!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} " +

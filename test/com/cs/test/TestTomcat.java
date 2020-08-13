@@ -212,6 +212,16 @@ public class TestTomcat {
         System.out.println(html);
     }
 
+    @Test
+    public void testClientJump(){
+        String http_servlet = getHttpString("/javaweb/jump1");
+        System.out.println(http_servlet);
+        containAssert(http_servlet,"HTTP/1.1 302 Found");
+        String http_jsp = getHttpString("/javaweb/jump1.jsp");
+        System.out.println(http_jsp);
+        containAssert(http_jsp,"HTTP/1.1 302 Found");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);

@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.log.LogFactory;
 
 import javax.servlet.http.Cookie;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,15 @@ public class Response extends BaseResponse {
     private byte[] body;
     private int status;
     private List<Cookie> cookies;
+    private String redirectPath;
+
+    public String getRedirectPath() {
+        return redirectPath;
+    }
+
+    public void sendRedirect(String redirectPath)throws IOException {
+        this.redirectPath = redirectPath;
+    }
 
     @Override
     public void setStatus(int status){
