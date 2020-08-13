@@ -12,6 +12,7 @@ import com.cs.tomcat.catalina.Engine;
 import com.cs.tomcat.catalina.Service;
 import com.cs.tomcat.util.MiniBrowser;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -45,6 +46,8 @@ public class Request extends BaseRequest {
 
     private HttpSession session;
 
+    private boolean forwarded;
+
     public Request(Socket socket,Connector connector) throws IOException {
         this.socket = socket;
         this.connector = connector;
@@ -68,6 +71,26 @@ public class Request extends BaseRequest {
         parseHeaders();
         LogFactory.get().info(headerMap.toString());
         parseCookies();
+    }
+
+    public boolean isForwarded() {
+        return forwarded;
+    }
+
+    public void setForwarded(boolean forwarded) {
+        this.forwarded = forwarded;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public Connector getConnector(){
@@ -358,5 +381,9 @@ public class Request extends BaseRequest {
     @Override
     public String getServletPath() {
         return uri;
+    }
+
+    public RequestDispatcher getRequestDispatcher(String uri){
+        return new ApplicationRequestDispatcher(uri);
     }
 }

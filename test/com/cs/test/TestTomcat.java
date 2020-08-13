@@ -222,6 +222,13 @@ public class TestTomcat {
         containAssert(http_jsp,"HTTP/1.1 302 Found");
     }
 
+    @Test
+    public void testServerJump(){
+        String http_servlet = getHttpString("/javaweb/jump2");
+        System.out.println(http_servlet);
+        containAssert(http_servlet,"Hello DIY Tomcat from HelloServlet");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
