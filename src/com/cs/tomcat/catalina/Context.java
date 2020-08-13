@@ -11,6 +11,8 @@ import com.cs.tomcat.http.ApplicationContext;
 import com.cs.tomcat.http.StandardServletConfig;
 import com.cs.tomcat.util.ContextXMLUtil;
 import com.cs.tomcat.wathcer.ContextFileChangeWatcher;
+import org.apache.jasper.JspC;
+import org.apache.jasper.compiler.JspRuntimeContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -245,6 +247,9 @@ public class Context {
             contextFileChangeWatcher = new ContextFileChangeWatcher(this);
             contextFileChangeWatcher.start();
         }
+        //进行JspRuntimeContext的初始化，是为了能够在jsp所转换的Java文件中的javax.servlet.jsp.JspFactory.getDefaultFactory()能够有返回值
+        JspC c = new JspC();
+        new JspRuntimeContext(servletContext,c);
     }
 
     public void stop() {
