@@ -188,7 +188,7 @@ public class TestTomcat {
         InputStream is = conn.getInputStream();
         String html = IoUtil.read(is,"utf-8");
         System.out.println(html);
-        containAssert(html,"Gareen(session)");
+        containAssert(html,"cs(session)");
     }
 
     @Test
@@ -227,6 +227,13 @@ public class TestTomcat {
         String http_servlet = getHttpString("/javaweb/jump2");
         System.out.println(http_servlet);
         containAssert(http_servlet,"Hello DIY Tomcat from HelloServlet");
+    }
+
+    @Test
+    public void testServerJumpWithAttributes(){
+        String http_servlet = getHttpString("/javaweb/jump2");
+        System.out.println(http_servlet);
+        containAssert(http_servlet,"Hello DIY Tomcat from HelloServlet@javaweb, the name is cs");
     }
 
     private String getContentString(String uri){

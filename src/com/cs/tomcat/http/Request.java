@@ -48,11 +48,15 @@ public class Request extends BaseRequest {
 
     private boolean forwarded;
 
+    private Map<String,Object> attributesMap;
+
+
     public Request(Socket socket,Connector connector) throws IOException {
         this.socket = socket;
         this.connector = connector;
         this.parameterMap = new HashMap<>();
         this.headerMap = new HashMap<>();
+        this.attributesMap = new HashMap<>();
         parseHttpRequest();
         if (StrUtil.isEmpty(requestString)) {
             return;
@@ -71,6 +75,23 @@ public class Request extends BaseRequest {
         parseHeaders();
         LogFactory.get().info(headerMap.toString());
         parseCookies();
+    }
+
+    public void removeAttribute(String name){
+        attributesMap.remove(name);
+    }
+
+    public void setAttribute(String name,Object value){
+        attributesMap.put(name,value);
+    }
+
+    public Object getAttribute(String name){
+        return attributesMap.get(name);
+    }
+
+    public Enumeration<String> getAttributeNames(){
+        Set<String> keys = attributesMap.keySet();
+        return Collections.enumeration(keys);
     }
 
     public boolean isForwarded() {
