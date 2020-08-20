@@ -236,6 +236,13 @@ public class TestTomcat {
         containAssert(http_servlet,"Hello DIY Tomcat from HelloServlet@javaweb, the name is cs");
     }
 
+    @Test
+    public void testJavaWeb0Hello(){
+        String html = getContentString("/javaweb0/hello");
+        System.out.println(html);
+        containAssert(html,"Hello DIY Tomcat from HelloServlet@javaweb");
+    }
+
     private String getContentString(String uri){
         String url = StrUtil.format("http://{}:{}{}",ip,port,uri);
         String content = MiniBrowser.getContentString(url);
