@@ -397,4 +397,55 @@ public class Context {
             }
         }
     }
+
+    /**
+     * @author: ChuShi
+     * @date: 2020/8/20 1:49 下午
+     * @param pattern
+     * @param uri
+     * @return: boolean
+     * @desc: filter常见的匹配模式 完全匹配  /*通配符匹配 后缀名匹配 其他匹配
+     */
+    private boolean match(String pattern,String uri){
+        //完全匹配
+        if (StrUtil.equals(pattern,uri)){
+            return true;
+        }
+        // /*模式
+        if (StrUtil.equals(pattern,"/*")){
+            return true;
+        }
+        //后缀名/*.jsp
+        if (StrUtil.startWith(pattern,"/*")){
+            String patternExtName = StrUtil.subAfter(pattern,'.',false);
+            String uriExtName = StrUtil.subAfter(uri,'.',false);
+            if (StrUtil.equals(patternExtName,uriExtName)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<Filter> getMatchedFilter(String uri){
+        List<Filter> filters = new ArrayList<>();
+        Set<String> patterns = urlFilterClassName.keySet();
+        Set<String> matchedPatterns = new HashSet<>();
+        for (String pattern:patterns){
+            if (match(pattern,uri)){
+                matchedPatterns.add(pattern);
+            }
+        }
+        Set<String> matchedFilterClassNames = new HashSet<>();
+        for (String pattern:matchedPatterns){
+            List<String> filterClassName = urlFilterClassName.get(pattern);
+            matchedFilterClassNames.addAll(filterClassName);
+        }
+
+        for (String filterClassName:matchedFilterClassNames){
+            Filter filter = filterPool.get(filterClassName);
+            filters.add(filter);
+        }
+        return filters;
+    }
 }

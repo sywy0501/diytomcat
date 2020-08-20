@@ -8,11 +8,14 @@ import com.cs.tomcat.http.*;
 import com.cs.tomcat.util.Constant;
 import com.cs.tomcat.util.SessionManager;
 
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * @description: 处理请求
@@ -32,15 +35,19 @@ public class HttpProcessor {
             System.out.println("uri: " + uri);
             Context context = request.getContext();
             String servletClassName = context.getServletClassName(uri);
+            HttpServlet workingServlet;
 
             if (null != servletClassName) {
-                InvokeServlet.getInstance().service(request, response);
+                workingServlet = InvokeServlet.getInstance();
             }else  if (uri.endsWith(".jsp")){
-                JspServlet.getInstance().service(request,response);
+                workingServlet = JspServlet.getInstance();
             } else {
-                DefaultServlet.getInstance().service(request, response);
+                workingServlet = DefaultServlet.getInstance();
             }
 
+            List<Filter> filters = request.getContext().getMatchedFilter(request.getRequestURI());
+            ApplicationFilterChain filterChain = new ApplicationFilterChain(filters,workingServlet);
+            filterChain.doFilter(request,response);
             if (request.isForwarded()){
                 return;
             }
