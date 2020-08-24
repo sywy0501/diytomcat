@@ -72,6 +72,8 @@ public class Context {
 
     private Map<String, Filter> filterPool;
 
+    private List<ServletContextListener> listeners;
+
     public Context(String path, String docBase, Host host, boolean reloadable) {
         TimeInterval timeInterval = DateUtil.timer();
         this.host = host;
@@ -93,6 +95,7 @@ public class Context {
         this.classNameFilterName = new HashMap<>();
         this.filterClassNameInitParams = new HashMap<>();
         this.filterPool = new HashMap<>();
+        listeners = new ArrayList<>();
 
         ClassLoader commonClassLoader = Thread.currentThread().getContextClassLoader();
         this.webappClassLoader = new WebappClassLoader(docBase, commonClassLoader);
@@ -260,9 +263,16 @@ public class Context {
         parseFilterMapping(d);
         parseFilterInitParams(d);
         initFilter();
+
+        parseLoadOnStartup(d);
+        handleLoadOnStartup();
+
+        fireEvent("init");
     }
 
     private void deploy() {
+        loadListeners();
+
         init();
         if (reloadable) {
             contextFileChangeWatcher = new ContextFileChangeWatcher(this);
@@ -277,6 +287,7 @@ public class Context {
         webappClassLoader.stop();
         contextFileChangeWatcher.stop();
         destroyServlets();
+        fireEvent("destroy");
     }
 
     public void reload() {
@@ -447,5 +458,41 @@ public class Context {
             filters.add(filter);
         }
         return filters;
+    }
+
+    public void addListener(ServletContextListener listener){
+        listeners.add(listener);
+    }
+
+    private void loadListeners(){
+        try {
+            if (!contextWebXmlFile.exists()){
+                return;
+            }
+            String xml = FileUtil.readUtf8String(contextWebXmlFile);
+            Document d = Jsoup.parse(xml);
+
+            Elements es = d.select("listener listener-class");
+            for (Element e:es){
+                String listenerClassName = e.text();
+                Class<?> clazz = this.getWebappClassLoader().loadClass(listenerClassName);
+                ServletContextListener listener = (ServletContextListener) clazz.newInstance();
+                addListener(listener);
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void fireEvent(String type){
+        ServletContextEvent event = new ServletContextEvent(servletContext);
+        for (ServletContextListener servletContextListener:listeners){
+            if ("init".equals(type)){
+                servletContextListener.contextInitialized(event);
+            }
+            if ("destroy".equals(type)){
+                servletContextListener.contextDestroyed(event);
+            }
+        }
     }
 }
