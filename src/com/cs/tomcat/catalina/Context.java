@@ -464,6 +464,13 @@ public class Context {
         listeners.add(listener);
     }
 
+    /**
+     * @author: ChuShi
+     * @date: 2020/8/24 2:32 下午
+     * @param
+     * @return: void
+     * @desc: web.xml中扫描监听器类
+     */
     private void loadListeners(){
         try {
             if (!contextWebXmlFile.exists()){
@@ -484,6 +491,13 @@ public class Context {
         }
     }
 
+    /**
+     * @author: ChuShi
+     * @date: 2020/8/24 2:32 下午
+     * @param type
+     * @return: void
+     * @desc: 创建fireEvent方法
+     */
     private void fireEvent(String type){
         ServletContextEvent event = new ServletContextEvent(servletContext);
         for (ServletContextListener servletContextListener:listeners){
